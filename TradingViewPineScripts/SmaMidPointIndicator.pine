@@ -1,0 +1,26 @@
+//@version=5
+indicator("SMA Midpoint Channel", overlay=true)
+
+// === Inputs
+sma20_len  = input.int(20 , title="SMA 20 Length")
+sma50_len  = input.int(50 , title="SMA 50 Length")
+sma200_len = input.int(200, title="SMA 200 Length")
+
+// === SMAs
+sma20  = ta.sma(close, sma20_len)
+sma50  = ta.sma(close, sma50_len)
+sma200 = ta.sma(close, sma200_len)
+
+// === Midpoints
+midpoint_20_50   = (sma20 + sma50) / 2
+midpoint_50_200  = (sma50 + sma200) / 2
+
+// === Plots
+plot(sma20,  title="SMA 20",  color=color.green,  linewidth=1)
+plot(sma50,  title="SMA 50",  color=color.orange, linewidth=2)
+plot(sma200, title="SMA 200", color=color.red,    linewidth=2)
+
+plot(midpoint_20_50,  title="Midpoint 20-50",  color=color.purple, linewidth=2, style=plot.style_line)
+plot(midpoint_50_200, title="Midpoint 50-200", color=color.blue,   linewidth=2, style=plot.style_line)
+
+fill(plot1=plot(sma50, display=display.none), plot2=plot(sma200, display=display.none), color=color.new(color.gray, 85), title="SMA 50-200 Fill")
