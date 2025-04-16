@@ -1,53 +1,53 @@
 "use strict";
 import { WebSocket } from 'ws';
 import { PopulateAllOrderTraded, PopulateHistoricalTrade, allOrderTraded, initWsConnection } from './KucoinPort';
-import { transformNextOrderTradedSides, getCurrentCumulativeDelta, transformHistoricalTrade, historicalTradesBatch } from './KucoinAdapter';
+import { transformNextOrderTradedSides, getCurrentCumDelta, transformHistoricalTrade, historicalTradesBatch } from './KucoinAdapter';
 import { HistoricalTrades, KucoinSubscriptionObject, SpotMarketTradedOrder } from '../CustomTypesComponent/CustomTypes';
-import { setCurrentCumulativeDeltaCore } from '../cumulative_delta';
+import { setCurrentCumDeltaCore } from '../cum_delta';
 
-let ws : WebSocket;
-beforeEach( ()=>{
+let ws: WebSocket;
+beforeEach(() => {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close();
-        ws.on('close',()=>{ws = initWsConnection();})
-    }else{
+        ws.on('close', () => { ws = initWsConnection(); })
+    } else {
         ws = initWsConnection();
     }
-    
+
 });
 
 describe("Kucoin Suite Tests ---- Port ",
-    ()=>{
+    () => {
         test("should return 1 if the connexion is open and ready to use",
-            (done)=>{
-                ws.on('open', ()=>{
+            (done) => {
+                ws.on('open', () => {
                     expect(ws.readyState).toEqual(WebSocket.OPEN);
                     ws.close()
-                    ws.on('close',()=>done())
+                    ws.on('close', () => done())
                 })
             }
         )
 
         test("Retrieve the ack object after the subscription",
-            (done)=>{
-                ws.on('open', ()=>{
-                    let kucoinSubscriptionObject : KucoinSubscriptionObject = {"id": 1545910660741,"type": "subscribe","topic": "/market/match:BTC-USDT","privateChannel": false,"response": true };
+            (done) => {
+                ws.on('open', () => {
+                    let kucoinSubscriptionObject: KucoinSubscriptionObject = { "id": 1545910660741, "type": "subscribe", "topic": "/market/match:BTC-USDT", "privateChannel": false, "response": true };
                     PopulateAllOrderTraded(kucoinSubscriptionObject);
                     ws.on('message',
-                        ()=>{
-                            if(allOrderTraded.length>=1){
+                        () => {
+                            if (allOrderTraded.length >= 1) {
                                 expect(allOrderTraded[0]).toBeDefined();
                             }
                             ws.close();
                         }
                     )
-                    ws.on('close',()=>done())
+                    ws.on('close', () => done())
                 });
             }
         )
 
         test("Historical Trades should return an array data of a 100 orders",
-            ()=>{
+            () => {
                 expect(PopulateHistoricalTrade("ETH-USDT")).toBeDefined();
             }
         )
@@ -55,10 +55,10 @@ describe("Kucoin Suite Tests ---- Port ",
 );
 
 describe("Kucoin Suite Tests ---- Adapter ",
-    ()=>{
+    () => {
         test("should start filling allOrderTradedSides",
-            (done)=>{
-                let nextTradedOrder : SpotMarketTradedOrder = {
+            (done) => {
+                let nextTradedOrder: SpotMarketTradedOrder = {
                     topic: "/market/match:BTC-USDT",
                     type: "message",
                     data: {
@@ -77,33 +77,33 @@ describe("Kucoin Suite Tests ---- Adapter ",
                 }
                 expect(transformNextOrderTradedSides(nextTradedOrder)).toStrictEqual(
                     {
-                        side:"buy",
-                        size:parseFloat("0.00001583")
+                        side: "buy",
+                        size: parseFloat("0.00001583")
                     }
                 );
                 done();
             }
         )
 
-        test("should getCurrentCumulativeDelta ",
-            (done)=>{
-                expect(getCurrentCumulativeDelta()).not.toBeNaN();
+        test("should getCurrentCumDelta ",
+            (done) => {
+                expect(getCurrentCumDelta()).not.toBeNaN();
                 done();
             }
         )
-        test("should Transform Historical Trade and allow for Cumulative delta initialisation",
-            async ()=>{
+        test("should Transform Historical Trade and allow for cum delta initialisation",
+            async () => {
                 await PopulateHistoricalTrade("BTC-USDT");
-                expect((historicalTradesBatch!= undefined)? historicalTradesBatch.data.length:0)
-                .toBeGreaterThan(0);
+                expect((historicalTradesBatch != undefined) ? historicalTradesBatch.data.length : 0)
+                    .toBeGreaterThan(0);
             }
         )
 
 
-        test("should Transform Historical Trade and allow for Cumulative delta initialisation",
-        ()=>{
-                setCurrentCumulativeDeltaCore(0); 
-                let historicalTradesBatchVar :HistoricalTrades = {
+        test("should Transform Historical Trade and allow for cum delta initialisation",
+            () => {
+                setCurrentCumDeltaCore(0);
+                let historicalTradesBatchVar: HistoricalTrades = {
                     "code": "200000",
                     "data": [
                         {
@@ -123,7 +123,7 @@ describe("Kucoin Suite Tests ---- Adapter ",
                     ]
                 }
                 transformHistoricalTrade(historicalTradesBatchVar)
-                expect(getCurrentCumulativeDelta()).toBe(-0.45);
+                expect(getCurrentCumDelta()).toBe(-0.45);
             }
         )
     }

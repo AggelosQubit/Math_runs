@@ -18,26 +18,26 @@ app.use(express.json());
 
 require("./server");
 
-let currentCumulativeDelta : number = 0;
+let currentCumDelta: number = 0;
 let numberOfDeltaConsumed: number = 0;
 
-export function CalculateCurrentCumulativeDelta(newOrder :AggresiveStrippedOrder ){
-    (newOrder.side==="buy")?
-        currentCumulativeDelta+=newOrder.size:
-        currentCumulativeDelta-=newOrder.size
+export function CalculateCurrentCumDelta(newOrder: AggresiveStrippedOrder) {
+    (newOrder.side === "buy") ?
+        currentCumDelta += newOrder.size :
+        currentCumDelta -= newOrder.size
     numberOfDeltaConsumed++;
 }
 
-export function getNumberOfDeltaConsumedCore(){
+export function getNumberOfDeltaConsumedCore() {
     return numberOfDeltaConsumed;
 }
-export function setNumberOfDeltaConsumed(nbOfDelta : number){
+export function setNumberOfDeltaConsumed(nbOfDelta: number) {
     numberOfDeltaConsumed = nbOfDelta;
 }
-export function getCurrentCumulativeDeltaCore(){
-    return currentCumulativeDelta
+export function getCurrentCumDeltaCore() {
+    return currentCumDelta
 }
 
-export function setCurrentCumulativeDeltaCore(newDelta : number){
-    currentCumulativeDelta = newDelta;
+export function setCurrentCumDeltaCore(newDelta: number) {
+    currentCumDelta = newDelta;
 }

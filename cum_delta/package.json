@@ -1,8 +1,8 @@
 {
-  "name": "cumulative_delta",
+  "name": "cum_delta",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/cumulative_delta.ts",
+  "main": "./src/cum_delta.ts",
   "scripts": {
     "start": "npx nodemon",
     "test": "set PORT=0&&npx jest --verbose"

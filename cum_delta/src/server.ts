@@ -1,5 +1,5 @@
 "use strict";
-import { app } from '../src/cumulative_delta';
+import { app } from '../src/cum_delta';
 
 /***ROUTES**/
 const port = process.env.PORT || 3000;
